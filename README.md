@@ -14,7 +14,6 @@ Version: v1.0
 Summary:
  A Web3-native freelance marketplace where users can post jobs, apply for gigs, and receive payments seamlessly through the Sui blockchain. The platform ensures secure, transparent, and borderless transactions while reducing platform fees.
 
-
  1. Objectives & Goals
 Problem Solved:
  Traditional freelance platforms take high fees, delay payments, and often lack transparency.
