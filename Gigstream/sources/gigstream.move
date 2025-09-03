@@ -12,9 +12,8 @@ public struct Freelancer has key, store{
     owner: address, 
     name: String,
     bio: String,
-    skills: vector<String>,
-    portfolio: vector<String>,
-    reviews: vector<String>,
+    skills: String,
+    portfolio: String,
 }
 
 public struct Clientprofile has key {
@@ -24,7 +23,6 @@ public struct Clientprofile has key {
     company: String,
     description: String,
     projects_posted: u64,
-    reviews: vector<String>,
 }
 
 
@@ -33,7 +31,7 @@ public struct Joblisting has key {
     client: address,
     title: String,
     description: String,    
-    required_skills: vector<String>,
+    required_skills: String,
     budget: u64,
     deadline: u64,
     status: String, 
@@ -48,8 +46,8 @@ fun init(ctx: &mut TxContext) {
 public entry fun create_freelancer_profile(
     name: String,
     bio: String,
-    skills: vector<String>,
-    portfolio: vector<String>,
+    skills: String,
+    portfolio:String,
     ctx: &mut TxContext
 ) {
     let freelancer = Freelancer {
@@ -59,7 +57,6 @@ public entry fun create_freelancer_profile(
         bio,
         skills,
         portfolio,
-        reviews: vector::empty()
     };
     transfer::share_object(freelancer);
 }
@@ -78,7 +75,6 @@ public entry fun create_client_profile(
         company,
         description,
         projects_posted: 0,
-        reviews: vector::empty()
     };
     transfer::share_object(client_profile);
 }
@@ -87,7 +83,7 @@ public entry fun create_client_profile(
 public entry fun create_job_listing(
     title: String,
     description: String,
-    required_skills: vector<String>,
+    required_skills: String,
     budget: u64,
     deadline: u64,
     ctx: &mut TxContext
