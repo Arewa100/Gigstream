@@ -3,7 +3,7 @@ module gigstream::gigstream;
 use std::string::String;
 use std::string;
 
-public struct Gigstream has key {
+public struct Gigstream has key, store{
     id: UID,    
 }
 
@@ -12,9 +12,9 @@ public struct Freelancer has key, store{
     owner: address, 
     name: String,
     bio: String,
-    skills: vector<vector<u8>>,
-    portfolio: vector<vector<u8>>,
-    reviews: vector<vector<u8>>
+    skills: vector<String>,
+    portfolio: vector<String>,
+    reviews: vector<String>,
 }
 
 public struct Clientprofile has key {
@@ -24,7 +24,7 @@ public struct Clientprofile has key {
     company: String,
     description: String,
     projects_posted: u64,
-    reviews: vector<vector<u8>>
+    reviews: vector<String>,
 }
 
 
@@ -32,8 +32,8 @@ public struct Joblisting has key {
     id: UID,
     client: address,
     title: String,
-    description: String,
-    required_skills: vector<vector<u8>>,
+    description: String,    
+    required_skills: vector<String>,
     budget: u64,
     deadline: u64,
     status: String, 
@@ -41,15 +41,15 @@ public struct Joblisting has key {
 
 fun init(ctx: &mut TxContext) {
     let gig_stream = Gigstream { id: object::new(ctx) };
-    transfer::share_object(gig_stream);
+    transfer::public_transfer(gig_stream, tx_context::sender(ctx));
 }
 
 
 public entry fun create_freelancer_profile(
     name: String,
     bio: String,
-    skills: vector<vector<u8>>,
-    portfolio: vector<vector<u8>>,
+    skills: vector<String>,
+    portfolio: vector<String>,
     ctx: &mut TxContext
 ) {
     let freelancer = Freelancer {
@@ -87,7 +87,7 @@ public entry fun create_client_profile(
 public entry fun create_job_listing(
     title: String,
     description: String,
-    required_skills: vector<vector<u8>>,
+    required_skills: vector<String>,
     budget: u64,
     deadline: u64,
     ctx: &mut TxContext
@@ -103,6 +103,12 @@ public entry fun create_job_listing(
         status:string::utf8(b"Open"),
     };
     transfer::share_object(job_listing);
-
-    
 }
+/**public entry fun apply_to_job(
+    job: &mut Joblisting,
+    freelancer: &Freelancer,
+    ctx: &mut TxContext
+) {
+    assert!(job.status == string::utf8(b"Open"), 1);
+    }
+    **/
