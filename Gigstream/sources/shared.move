@@ -94,8 +94,6 @@ public fun swap<T: key + store>(
     escrowed
 }
 
-
-
 public fun return_to_sender<S>(
     mut escrow: Escrow<Coin<S>>,
     ctx: &mut TxContext
