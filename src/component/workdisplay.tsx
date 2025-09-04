@@ -75,10 +75,10 @@ const WorkDisplay = () => {
                                                 className="w-full h-full object-contain"
                                             />    
                                         </div>
-                                        <p className="font-[poppins] font-bold text-[16px] text-gray-900">
+                                        <p className="font-[poppins] font-bold text-[16px] text-gray-600">
                                             {gig.amount.toLocaleString()}
                                         </p>
-                                        <p className="font-[poppins] font-bold text-[16px] text-[#64748B]">
+                                        <p className="font-[poppins] font-medium text-[16px] text-[#64748B]">
                                             SUI
                                         </p>
                                     </div>

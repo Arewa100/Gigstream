@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import BrowseOpportunitySection from "./browseOpportunity"
 import Header from "./header"
 import NavBar from "./navBar"
+import FindFreelancer from "./findfreelancer";
+import Footer from "./footer";
 
 const LandingPage = () => {
     const [showNavbar, setShowNavbar] = useState(true);
@@ -35,6 +37,8 @@ const LandingPage = () => {
                 <div data-section="browse-opportunity">
                     <BrowseOpportunitySection/>
                 </div>
+                <FindFreelancer/>
+                <Footer/>
             </div>
         </>
     )
