@@ -1,10 +1,8 @@
 module gigstream::gigstream {
-    use sui::object::{Self, UID};
-    use sui::transfer;
-    use sui::tx_context::{Self, TxContext};
+
     use sui::event;
     use std::string::{Self, String};
-    use std::vector;
+    
 
     // Error codes
     const E_JOB_NOT_OPEN: u64 = 1;
@@ -21,7 +19,6 @@ module gigstream::gigstream {
     public struct Gigstream has key {
         id: UID,
     }
-
 
     public struct Freelancer has key, store {
         id: UID,
@@ -98,8 +95,7 @@ module gigstream::gigstream {
         transfer::share_object(freelancer);
     }
 
-
-    public entry fun create_client_profile(
+     entry fun create_client_profile(
         name: String,
         company: String,
         description: String,
@@ -116,9 +112,8 @@ module gigstream::gigstream {
         };
         transfer::share_object(client_profile);
     }
-
-    /// Create a job listing
-    public entry fun create_job_listing(
+    
+     entry fun create_job_listing(
         client_profile: &mut ClientProfile,
         title: String,
         description: String,
@@ -151,7 +146,7 @@ module gigstream::gigstream {
     }
 
     /// Apply to a job listing
-    public entry fun apply_to_job(
+     entry fun apply_to_job(
         job: &mut JobListing,
         freelancer: &Freelancer,
         proposal: String,
@@ -187,7 +182,7 @@ module gigstream::gigstream {
     }
 
     /// Assign a job to a freelancer (client only)
-    public entry fun assign_job(
+     entry fun assign_job(
         job: &mut JobListing,
         freelancer_address: address,
         ctx: &mut TxContext
@@ -207,7 +202,7 @@ module gigstream::gigstream {
     }
 
     /// Mark job as completed (client only)
-    public entry fun complete_job(
+    entry fun complete_job(
         job: &mut JobListing,
         freelancer: &mut Freelancer,
         ctx: &mut TxContext
@@ -226,7 +221,7 @@ module gigstream::gigstream {
     }
 
     /// Cancel/close a job (client only)
-    public entry fun close_job(
+    entry fun close_job(
         job: &mut JobListing,
         ctx: &mut TxContext
     ) {
@@ -239,7 +234,7 @@ module gigstream::gigstream {
     }
 
     /// Update freelancer profile
-    public entry fun update_freelancer_profile(
+    entry fun update_freelancer_profile(
         freelancer: &mut Freelancer,
         name: String,
         bio: String,
@@ -256,7 +251,7 @@ module gigstream::gigstream {
     }
 
     /// Update client profile
-    public entry fun update_client_profile(
+    entry fun update_client_profile(
         client: &mut ClientProfile,
         name: String,
         company: String,
