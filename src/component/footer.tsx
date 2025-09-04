@@ -178,14 +178,14 @@ const Footer = () => {
                     <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
                         
                         {/* Copyright */}
-                        <div className="flex items-center space-x-2 sm:space-x-4 text-white text-xs sm:text-sm font-[poppins] order-2 md:order-1">
+                        <div className=" sm:text-xs flex items-center space-x-2 sm:space-x-4 text-white text-xs font-[poppins] order-2 md:order-1">
                             <span>© GIGSTREAM</span>
                             <span>2025.</span>
                         </div>
 
                         {/* Built by */}
-                        <div className="text-white text-xs sm:text-sm font-[poppins] order-3 md:order-2 text-center">
-                            <span className="mr-1 sm:mr-2">Designed and built by</span>
+                        <div className="text-white text-xs  sm:text-xs  font-[poppins] order-3 md:order-2 text-center">
+                            <span className="mr-1 sm:mr-2">Designed with love by</span>
                             <span className="text-[#00D4AA] font-medium">GIGSTREAM TEAM</span>
                         </div>
 
@@ -199,7 +199,7 @@ const Footer = () => {
                                 <motion.a
                                     key={social.name}
                                     href="#"
-                                    className="w-8 h-8 sm:w-10 sm:h-10 bg-white/10 rounded-lg flex items-center justify-center hover:bg-[#00D4AA]/20 transition-colors duration-200"
+                                    className="w-8 h-8 sm:w-10 sm:h-10  rounded-lg flex items-center justify-center hover:bg-[#00D4AA]/20 transition-colors duration-200"
                                     whileHover={{ scale: 1.05 }}
                                     whileTap={{ scale: 0.95 }}
                                 >
@@ -209,14 +209,6 @@ const Footer = () => {
                                 </motion.a>
                             ))}
                             
-                            {/* Sui Logo */}
-                            <motion.div
-                                className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-[#645CF6] to-[#00D4AA] rounded-lg flex items-center justify-center"
-                                whileHover={{ scale: 1.05 }}
-                                whileTap={{ scale: 0.95 }}
-                            >
-                                <div className="w-4 h-4 sm:w-6 sm:h-6 bg-white rounded-sm"></div>
-                            </motion.div>
                         </div>
                     </div>
                 </div>

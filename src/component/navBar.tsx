@@ -1,5 +1,8 @@
+// src/components/NavBar.tsx
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
+import { useCurrentAccount, useDisconnectWallet, ConnectButton } from '@mysten/dapp-kit';
+import { useNavigate } from 'react-router-dom';
 
 interface NavBarProps {
     showNavbar: boolean;
@@ -7,6 +10,41 @@ interface NavBarProps {
 
 const NavBar = ({ showNavbar }: NavBarProps) => {
     const [isNavHovered, setIsNavHovered] = useState(false);
+    const [isConnectHovered, setIsConnectHovered] = useState(false); // Add this state
+    const currentAccount = useCurrentAccount();
+    const { mutate: disconnect } = useDisconnectWallet();
+    const navigate = useNavigate();
+
+    const handleNavigation = (item: string) => {
+        if (item === 'Connect') {
+            if (currentAccount) {
+                // User is connected, so disconnect
+                disconnect();
+                navigate('/');
+            }
+            // If not connected, ConnectButton overlay handles the connection
+            return;
+        }
+
+        if (!currentAccount) {
+            alert('Please connect your wallet first to access this feature');
+            return;
+        }
+
+        switch (item) {
+            case 'Hire':
+                navigate('/job-listing');
+                break;
+            case 'Find Gig':
+                navigate('/dashboard');
+                break;
+            case 'Why Gigstream':
+                navigate('/');
+                break;
+            default:
+                break;
+        }
+    };
 
     return(
         <AnimatePresence>
@@ -25,10 +63,11 @@ const NavBar = ({ showNavbar }: NavBarProps) => {
                             
                             {/* Logo - responsive */}
                             <motion.h1 
-                                className="font-[poppins] text-white font-semibold text-[18px] md:text-[21.6px] w-full md:w-[300px] text-center md:text-left mb-2 md:mb-0"
+                                className="font-[poppins] text-white font-semibold text-[18px] md:text-[21.6px] w-full md:w-[300px] text-center md:text-left mb-2 md:mb-0 cursor-pointer"
                                 initial={{ opacity: 0, x: -20 }}
                                 animate={{ opacity: 1, x: 0 }}
                                 transition={{ duration: 0.6 }}
+                                onClick={() => navigate('/')}
                             >
                                 <span className="text-[#00D4AA]">Gig</span>stream
                             </motion.h1>
@@ -36,21 +75,54 @@ const NavBar = ({ showNavbar }: NavBarProps) => {
                             {/* Navigation buttons */}
                             <div className="w-full md:w-[621px] h-auto md:h-full flex flex-wrap md:flex-nowrap items-center justify-center md:justify-between gap-2 md:gap-0">
                                 {["Hire", "Find Gig", "Why Gigstream", "Connect"].map((item, index) => (
-                                    <motion.button 
-                                        key={item}
-                                        className="w-auto md:w-[150px] h-auto md:h-full px-3 md:px-0 py-2 md:py-0 text-white font-semibold font-[poppins] text-[14px] md:text-[18px] relative group"
-                                        initial={{ opacity: 0, y: -20 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        transition={{ duration: 0.6, delay: index * 0.1 }}
+                                    <div 
+                                        key={item} 
+                                        className="w-auto md:w-[150px] h-auto md:h-full relative"
+                                        onMouseEnter={() => item === 'Connect' && setIsConnectHovered(true)}
+                                        onMouseLeave={() => item === 'Connect' && setIsConnectHovered(false)}
                                     >
-                                        <motion.span className="relative z-10">
-                                            {item}
-                                        </motion.span>
+                                        {/* Invisible ConnectButton overlay (only for Connect when not connected) */}
+                                        {item === 'Connect' && !currentAccount && (
+                                            <ConnectButton 
+                                                style={{
+                                                    position: 'absolute',
+                                                    width: '100%',
+                                                    height: '100%',
+                                                    backgroundColor: 'transparent',
+                                                    color: 'transparent',
+                                                    border: 'none',
+                                                    fontSize: '0px',
+                                                    zIndex: 30,
+                                                    boxShadow: 'none',
+                                                    outline: 'none',
+                                                }}
+                                            />
+                                        )}
                                         
-                                        <span className="absolute bottom-0 left-0 w-full h-[2px] bg-transparent">
-                                            <span className="absolute bottom-0 left-0 h-full bg-white transform scale-x-0 origin-left transition-transform duration-500 ease-out group-hover:scale-x-100 w-full"></span>
-                                        </span>
-                                    </motion.button>
+                                        {/* Your styled button */}
+                                        <motion.button 
+                                            onClick={() => handleNavigation(item)}
+                                            className="w-auto md:w-[150px] h-auto md:h-full px-3 md:px-0 py-2 md:py-0 text-white font-semibold font-[poppins] text-[14px] md:text-[16px] relative group cursor-pointer"
+                                            initial={{ opacity: 0, y: -20 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            transition={{ duration: 0.6, delay: index * 0.1 }}
+                                        >
+                                            <motion.span className="relative z-10">
+                                                {item === 'Connect' && currentAccount ? 'Disconnect' : item}
+                                            </motion.span>
+                                            
+                                            <span className="absolute bottom-0 left-0 w-full h-[2px] bg-transparent">
+                                                <span className={`absolute bottom-0 left-0 h-full transform origin-left transition-transform duration-500 ease-out w-full ${
+                                                    // Show hover effect when either group-hover is active OR when Connect is manually hovered
+                                                    (item === 'Connect' && !currentAccount) 
+                                                        ? `${isConnectHovered ? 'scale-x-100' : 'scale-x-0'} bg-white`
+                                                        : item === 'Connect' && currentAccount
+                                                        ? 'group-hover:scale-x-100 scale-x-0 bg-red-400'
+                                                        : 'group-hover:scale-x-100 scale-x-0 bg-white'
+                                                }`}></span>
+                                            </span>
+                                        </motion.button>
+                                    </div>
                                 ))}
                             </div>
 
@@ -80,9 +152,12 @@ const NavBar = ({ showNavbar }: NavBarProps) => {
     )
 }
 
+
 // Updated component - click to expand, hover navbar to close
 const KonikuStyleMenuWithNavbar = ({ isNavHovered }: { isNavHovered: boolean }) => {
     const [isExpanded, setIsExpanded] = useState(false);
+    const currentAccount = useCurrentAccount();
+    const navigate = useNavigate();
 
     // Close menu when hovering out of navbar, but only expand on click
     const shouldShow = isExpanded && isNavHovered;
@@ -91,6 +166,30 @@ const KonikuStyleMenuWithNavbar = ({ isNavHovered }: { isNavHovered: boolean }) 
     if (!isNavHovered && isExpanded) {
         setTimeout(() => setIsExpanded(false), 100);
     }
+
+    const handleMenuNavigation = (item: string) => {
+        if (!currentAccount) {
+            alert('Please connect your wallet first to access this feature');
+            return;
+        }
+
+        switch (item) {
+            case 'About':
+                navigate('/');
+                break;
+            case 'Blog':
+                navigate('/');
+                break;
+            case 'Careers':
+                navigate('/');
+                break;
+            case 'Support':
+                navigate('/');
+                break;
+            default:
+                break;
+        }
+    };
 
     return (
         <div className="flex items-center">
@@ -106,7 +205,8 @@ const KonikuStyleMenuWithNavbar = ({ isNavHovered }: { isNavHovered: boolean }) 
                         {["About", "Blog", "Careers", "Support"].map((item, index) => (
                             <motion.button
                                 key={item}
-                                className="w-auto px-2 md:px-3 py-2 text-white font-semibold font-[poppins] text-[14px] md:text-[16px] relative group whitespace-nowrap  md:w-[120px] h-auto md:h-full"
+                                onClick={() => handleMenuNavigation(item)}
+                                className="w-auto px-2 md:px-3 py-2 text-white font-semibold font-[poppins] text-[14px] md:text-[16px] relative group whitespace-nowrap  md:w-[120px] h-auto md:h-full cursor-pointer"
                                 initial={{ opacity: 0, x: -20 }}
                                 animate={{ opacity: 1, x: 0 }}
                                 exit={{ opacity: 0, x: -20 }}
