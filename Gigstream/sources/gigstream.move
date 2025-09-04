@@ -1,7 +1,8 @@
 module gigstream::gigstream;
 
-use std::string::String;
 use std::string;
+use std::string::String;
+
 
 public struct Gigstream has key, store{
     id: UID,    
