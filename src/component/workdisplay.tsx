@@ -87,9 +87,9 @@ const WorkDisplay = () => {
                         </div>
                     ))}
                     
-                    {/* View All Button */}
-                    <div className="px-4 pb-4 pt-2">
-                        <button className="w-full font-[poppins] font-medium text-[14px] text-[#5B3AED] py-3 rounded-lg hover:bg-gray-100 hover:text-[#00D4AA] transition-all duration-200 border border-[#5B3AED]">
+                    {/* View All Button - UPDATED */}
+                    <div className="px-4 pt-2 bg-white">
+                        <button className="w-full h-[40px] font-[poppins] font-medium text-[14px] text-white bg-[#5B3AED] rounded-lg hover:bg-[#5B3AED]/20 hover:text-[#5B3AED] transition-all duration-200 ">
                             View All
                         </button>
                     </div>

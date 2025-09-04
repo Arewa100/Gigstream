@@ -8,23 +8,19 @@ const LandingPage = () => {
 
     useEffect(() => {
         const handleScroll = () => {
-            const scrollY = window.scrollY;
-            const windowHeight = window.innerHeight;
+            const browseSection = document.querySelector('[data-section="browse-opportunity"]');
             
-            // Get header height to determine when browse section starts
-            const header = document.querySelector('header') || document.querySelector('[data-section="header"]');
-            const headerHeight = header ? header.offsetHeight : windowHeight;
-            
-            // Hide navbar when user has scrolled past header + 200px into browse section
-            const triggerPoint = headerHeight + 200;
-            
-            if (scrollY >= triggerPoint) {
-                setShowNavbar(false);
-            } else if (scrollY <= triggerPoint - 100) {
-                setShowNavbar(true);
+            if (browseSection) {
+                const rect = browseSection.getBoundingClientRect();
+                const viewportHeight = window.innerHeight;
+                
+                // Hide navbar when browse section is 50% visible
+                if (rect.top <= viewportHeight * 0.10) {
+                    setShowNavbar(false);
+                } else {
+                    setShowNavbar(true);
+                }
             }
-            
-            console.log('Scroll Y:', scrollY, 'Trigger Point:', triggerPoint); // Debug log
         };
 
         window.addEventListener('scroll', handleScroll);
@@ -35,9 +31,7 @@ const LandingPage = () => {
         <>
             <NavBar showNavbar={showNavbar} />
             <div className="min-h-screen w-full max-w-[1440px] mx-auto">
-                <div data-section="header">
-                    <Header/>
-                </div>
+                <Header/>
                 <div data-section="browse-opportunity">
                     <BrowseOpportunitySection/>
                 </div>
