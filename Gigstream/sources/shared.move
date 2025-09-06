@@ -1,11 +1,13 @@
 module gigstream::escrow;
+
 use sui::dynamic_object_field as dof;
 use sui::event;
-use gigstream::lock::{Locked, Key, unlock};
+use sui::coin::{Self as coin, Coin};
+use gigstream::lock::{Locked, Key};
 
 const EMismatchedSenderRecipient: u64 = 0;
 const EMismatchedExchangeObject: u64 = 1;
-
+const TREASURY: address = @0xCAFE;
 
 public struct EscrowedObjectKey has copy, drop, store {}
 
@@ -23,6 +25,14 @@ public struct EscrowCreated has copy, drop {
     item_id: ID,
 }
 
+public struct EscrowSwapped has copy, drop {
+    escrow_id: ID,
+}
+
+public struct EscrowCancelled has copy, drop {
+    escrow_id: ID,
+}
+
 public fun create_escrow<T: key + store>(
     escrowed: T,
     exchange_key: ID,
@@ -35,6 +45,7 @@ public fun create_escrow<T: key + store>(
         freelancer: recipient,
         exchange_key,
     };
+
     event::emit(EscrowCreated {
         escrow_id: object::id(&escrow),
         client: ctx.sender(),
@@ -47,18 +58,17 @@ public fun create_escrow<T: key + store>(
     transfer::public_share_object(escrow);
 }
 
-
-public fun swap<T: key + store, U: key + store>(
+public fun swap<T: key + store>(
     mut escrow: Escrow<T>,
     key: Key,
-    locked: Locked<U>,
-    ctx: &TxContext,
-): T {
-    let escrowed = dof::remove<EscrowedObjectKey, T>(&mut escrow.id, EscrowedObjectKey {});
+    locked: Locked<Coin<T>>,
+    ctx: &mut TxContext,
+): Coin<T> {
+    let escrowed = dof::remove<EscrowedObjectKey, Coin<T>>(&mut escrow.id, EscrowedObjectKey {});
 
     let Escrow {
         id,
-        client,
+        client: _,
         freelancer,
         exchange_key,
     } = escrow;
@@ -66,23 +76,31 @@ public fun swap<T: key + store, U: key + store>(
     assert!(freelancer == ctx.sender(), EMismatchedSenderRecipient);
     assert!(exchange_key == object::id(&key), EMismatchedExchangeObject);
 
-    transfer::public_transfer(locked.unlock(key), client);
+    let mut coin_released = locked.unlock(key);
 
-    event::emit(EscrowSwapped {
-        escrow_id: id.to_inner(),
-    });
+    // Calculate value before mutable borrow
+    let coin_released_value = coin::value<T>(&coin_released);
 
+    // Take 2% fee
+    let fee = coin::split<T>(&mut coin_released, coin_released_value / 50, ctx);
+    transfer::public_transfer(fee, TREASURY);
+
+    // Send remainder to freelancer
+    transfer::public_transfer(coin_released, freelancer);
+
+    event::emit(EscrowSwapped { escrow_id: id.to_inner() });
     id.delete();
 
     escrowed
 }
 
-public fun return_to_sender<T: key + store>(mut escrow: Escrow<T>, ctx: &TxContext): T {
-    event::emit(EscrowCancelled {
-        escrow_id: object::id(&escrow),
-    });
+public fun return_to_sender<S>(
+    mut escrow: Escrow<Coin<S>>,
+    ctx: &mut TxContext
+) {
+    event::emit(EscrowCancelled { escrow_id: object::id(&escrow) });
 
-    let escrowed = dof::remove<EscrowedObjectKey, T>(&mut escrow.id, EscrowedObjectKey {});
+    let mut escrowed = dof::remove<EscrowedObjectKey, Coin<S>>(&mut escrow.id, EscrowedObjectKey {});
 
     let Escrow {
         id,
@@ -92,14 +110,17 @@ public fun return_to_sender<T: key + store>(mut escrow: Escrow<T>, ctx: &TxConte
     } = escrow;
 
     assert!(client == ctx.sender(), EMismatchedSenderRecipient);
+
+    // Calculate value before mutable borrow
+    let escrowed_value = coin::value<S>(&escrowed);
+
+    // Deduct 2% fee and return the rest to client
+    let fee = coin::split<S>(&mut escrowed, escrowed_value / 50, ctx);
+    transfer::public_transfer(fee, TREASURY);
+
+    // Return 98% to client
+    transfer::public_transfer(escrowed, client);
+
     id.delete();
-    escrowed
-}
-
-public struct EscrowSwapped has copy, drop {
-    escrow_id: ID,
-}
-
-public struct EscrowCancelled has copy, drop {
-    escrow_id: ID,
+    // No return value
 }
