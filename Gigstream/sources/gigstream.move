@@ -220,7 +220,6 @@ module gigstream::gigstream {
         freelancer.jobs_completed = freelancer.jobs_completed + 1;
     }
 
-    /// Cancel/close a job (client only)
     public entry fun close_job(
         job: &mut JobListing,
         ctx: &mut TxContext
@@ -233,7 +232,7 @@ module gigstream::gigstream {
         job.assigned_freelancer = option::none();
     }
 
-    /// Update freelancer profile
+
     public entry fun update_freelancer_profile(
         freelancer: &mut Freelancer,
         name: String,
