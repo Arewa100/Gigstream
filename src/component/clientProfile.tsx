@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useCurrentAccount, useSignAndExecuteTransaction } from '@mysten/dapp-kit';
 import { Transaction } from '@mysten/sui/transactions';
-import { GIGSTREAM_CONSTANTS } from '../utils/gigstreamConstants';
+import { GIGSTREAM_CONSTANTS, CONTRACT_FUNCTIONS } from '../utils/gigstreamConstants';
 
 interface ClientFormData {
   name: string;
@@ -55,8 +55,9 @@ const ClientProfile = () => {
       txb.setGasBudget(GIGSTREAM_CONSTANTS.GAS_BUDGET);
       
       txb.moveCall({
-        target: `${GIGSTREAM_CONSTANTS.PACKAGE_ID}::${GIGSTREAM_CONSTANTS.MODULE_NAME}::create_client_profile`,
+        target: CONTRACT_FUNCTIONS.CREATE_CLIENT_PROFILE,
         arguments: [
+          txb.object(GIGSTREAM_CONSTANTS.GIGSTREAM_OBJECT_ID),
           txb.pure.string(formData.name.trim()),
           txb.pure.string(formData.company.trim()),
           txb.pure.string(formData.description.trim()),
@@ -68,7 +69,7 @@ const ClientProfile = () => {
         {
           onSuccess: (result) => {
             console.log('Client profile created:', result);
-            setSuccess('Client profile created successfully!');
+            setSuccess(`Client profile created successfully! Transaction: ${result.digest}`);
             setFormData({
               name: '',
               company: '',

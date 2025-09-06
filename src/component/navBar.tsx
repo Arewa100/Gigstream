@@ -33,10 +33,10 @@ const NavBar = ({ showNavbar }: NavBarProps) => {
 
         switch (item) {
             case 'Hire':
-                navigate('/job-listing');
+                navigate('/hire'); // Updated to navigate to /hire
                 break;
             case 'Find Gig':
-                navigate('/dashboard');
+                navigate('/find-gig'); // Updated to navigate to /find-gig
                 break;
             case 'Why Gigstream':
                 navigate('/');

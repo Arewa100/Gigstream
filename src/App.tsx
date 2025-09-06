@@ -1,4 +1,4 @@
-// src/App.tsx
+// src/App.tsx - Updated routing with PostJob
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { createNetworkConfig, SuiClientProvider, WalletProvider } from '@mysten/dapp-kit';
 import { getFullnodeUrl } from '@mysten/sui/client';
@@ -12,6 +12,7 @@ import Dashboard from './component/dashboard';
 import FreelancerProfile from './component/freelancerProfile';
 import ClientProfile from './component/clientProfile';
 import JobListing from './component/jobListing';
+import PostJob from './component/postjob'; // NEW: Import PostJob component
 import ProtectedRoute from './component/protectedRoute';
 
 const { networkConfig } = createNetworkConfig({
@@ -36,53 +37,81 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <SuiClientProvider networks={networkConfig} defaultNetwork="testnet">
-        <WalletProvider 
-          autoConnect={true}
-        >
+        <WalletProvider autoConnect={true}>
           <Router>
             <div className="App">
               <Routes>
                 {/* Landing page route */}
                 <Route path="/" element={<LandingPage />} />
                 
-                {/* Protected dashboard route */}
-                <Route 
-                  path="/dashboard" 
+                {/* Protected dashboard routes */}
+                <Route
+                  path="/dashboard"
                   element={
                     <ProtectedRoute>
                       <Dashboard />
                     </ProtectedRoute>
-                  } 
+                  }
                 />
-
+                
+                {/* NEW: Hire page (client-focused dashboard) */}
+                <Route
+                  path="/hire"
+                  element={
+                    <ProtectedRoute>
+                      <Dashboard />
+                    </ProtectedRoute>
+                  }
+                />
+                
+                {/* NEW: Find Gig page (freelancer-focused dashboard) */}
+                <Route
+                  path="/find-gig"
+                  element={
+                    <ProtectedRoute>
+                      <Dashboard />
+                    </ProtectedRoute>
+                  }
+                />
+                
                 {/* Protected freelancer profile creation */}
-                <Route 
-                  path="/freelancer-profile" 
+                <Route
+                  path="/freelancer-profile"
                   element={
                     <ProtectedRoute>
                       <FreelancerProfile />
                     </ProtectedRoute>
-                  } 
+                  }
                 />
-
+                
                 {/* Protected client profile creation */}
-                <Route 
-                  path="/client-profile" 
+                <Route
+                  path="/client-profile"
                   element={
                     <ProtectedRoute>
                       <ClientProfile />
                     </ProtectedRoute>
-                  } 
+                  }
                 />
-
-                {/* Protected job listing creation */}
-                <Route 
-                  path="/job-listing" 
+                
+                {/* Protected job listing creation (legacy route) */}
+                <Route
+                  path="/job-listing"
                   element={
                     <ProtectedRoute>
                       <JobListing />
                     </ProtectedRoute>
-                  } 
+                  }
+                />
+                
+                {/* NEW: Protected post job route */}
+                <Route
+                  path="/post-job"
+                  element={
+                    <ProtectedRoute>
+                      <PostJob />
+                    </ProtectedRoute>
+                  }
                 />
                 
                 {/* Redirecting any unknown routes to home */}

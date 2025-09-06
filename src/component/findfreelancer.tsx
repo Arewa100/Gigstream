@@ -121,7 +121,7 @@ const FindFreelancer: React.FC<FindFreelancerProps> = ({
 
                 <div className="relative z-10 p-8 flex flex-col items-center justify-center h-full text-center">
                     <motion.h1 
-                        className="text-4xl font-bold text-gray-600 mb-4 font-[poppins]"
+                        className="text-4xl font-bold text-gray-600 mb-4 font"
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.8 }}
